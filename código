@@ -1,0 +1,86 @@
+# Lista para armazenar os usuários e as contas
+usuarios = []
+contas = []
+
+# Função para saque
+def saque(*, saldo, valor, extrato, limite, numero_saques, limite_saques):
+    if valor > saldo:
+        print("Saldo insuficiente!")
+    elif valor > limite:
+        print("Valor do saque excede o limite!")
+    elif numero_saques >= limite_saques:
+        print("Número máximo de saques excedido!")
+    else:
+        saldo -= valor
+        extrato.append(f"Saque: R${valor:.2f}")
+        numero_saques += 1
+    return saldo, extrato, numero_saques
+
+# Função para depósito
+def deposito(saldo, valor, extrato, /):
+    if valor > 0:
+        saldo += valor
+        extrato.append(f"Depósito: R${valor:.2f}")
+    else:
+        print("Valor de depósito inválido!")
+    return saldo, extrato
+
+# Função para criar usuário
+def criar_usuario(nome, data_nascimento, cpf, endereco):
+    # Verifica se já existe um usuário com o mesmo CPF
+    for usuario in usuarios:
+        if usuario['cpf'] == cpf:
+            print("Usuário com este CPF já cadastrado!")
+            return
+    
+    # Adiciona o novo usuário à lista de usuários
+    usuarios.append({
+        "nome": nome,
+        "data_nascimento": data_nascimento,
+        "cpf": cpf,
+        "endereco": endereco
+    })
+    print("Usuário cadastrado com sucesso!")
+
+# Função para criar conta corrente
+def criar_conta_corrente(cpf):
+    # Procura o usuário com o CPF fornecido
+    usuario = next((usuario for usuario in usuarios if usuario['cpf'] == cpf), None)
+    
+    if not usuario:
+        print("Usuário não encontrado!")
+        return
+    
+    # Gera o número da conta sequencialmente
+    numero_conta = len(contas) + 1
+    
+    # Adiciona a nova conta à lista de contas
+    contas.append({
+        "agencia": "0001",
+        "numero_conta": numero_conta,
+        "usuario": usuario
+    })
+    print("Conta corrente criada com sucesso!")
+
+# Exemplo de uso das funções
+saldo = 1000.0
+extrato = []
+limite = 500.0
+numero_saques = 0
+limite_saques = 3
+
+# Realizando operações
+saldo, extrato, numero_saques = saque(saldo=saldo, valor=100.0, extrato=extrato, limite=limite, numero_saques=numero_saques, limite_saques=limite_saques)
+saldo, extrato = deposito(saldo, 200.0, extrato)
+
+# Criando usuários e contas
+criar_usuario("João Silva", "01/01/1990", "12345678900", "Rua A, 123 - Centro - Cidade/UF")
+criar_usuario("Maria Souza", "02/02/1985", "09876543211", "Rua B, 456 - Bairro - Cidade/UF")
+
+criar_conta_corrente("12345678900")
+criar_conta_corrente("09876543211")
+
+print("Usuários:", usuarios)
+print("Contas:", contas)
+print("Saldo:", saldo)
+print("Extrato:", extrato)
